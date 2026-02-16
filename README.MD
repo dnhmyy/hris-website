@@ -68,12 +68,10 @@ Pastikan server dapat diakses oleh mesin dalam jaringan yang sama atau melalui t
 
 ## Pengembangan Internal
 Sistem ini dikembangkan secara internal untuk mendukung kebutuhan operasional RotiKebanggaan yang memiliki beberapa cabang dan terus berkembang.
-
 Tujuan utama:
 mengurangi beban kerja manual HR, meningkatkan akurasi data, dan mempermudah proses monitoring lintas cabang.
 
 
 ## Pengembang
-Dikembangkan secara internal oleh:
-DnnTech
+Dikembangkan secara internal oleh: DnnTech
 RotiKebanggaan IT Division – 2026
