@@ -3,12 +3,9 @@ from flask import render_template_string
 import time
 import mysql.connector
 import os
-import base64
-import uuid
 from werkzeug.security import check_password_hash
 from functools import wraps
 import requests
-import re
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -55,13 +52,6 @@ def send_soap_request(device_ip, payload):
     except Exception as e:
         print(f"SOAP Error ({device_ip}): {e}")
         return None
-
-def parse_xml_tag(data, tag):
-    """Helper sederhana untuk mengambil konten di dalam tag XML (seperti parse.php di SDK)"""
-    if not data: return ""
-    pattern = f"<{tag}>(.*?)</{tag}>"
-    match = re.search(pattern, data, re.DOTALL)
-    return match.group(1) if match else ""
 
 # ============================================
 # FUNGSI BANTUAN UNTUK DATABASE & AUTH
@@ -120,38 +110,6 @@ def calculate_diff_smart(time_val, ref_time, is_night_shift=False):
         diff -= 1440 # Kurangi 24 jam
         
     return diff
-
-def get_logical_date(timestamp_str, shift_start, shift_end):
-    """
-    Menentukan tanggal absensi yang logis.
-    Untuk Shift Normal (09-17): Tanggal sesuai timestamp.
-    Untuk Shift Malam (22-06):
-    - Absen jam 22:00 - 23:59: Tanggal record = Tanggal itu.
-    - Absen jam 00:00 - 12:00: Tanggal record = KEMARIN (H-1).
-    """
-    dt = datetime.strptime(timestamp_str, '%Y-%m-%d %H:%M:%S')
-    date_part = dt.date()
-    time_part = dt.time()
-    t_min = time_part.hour * 60 + time_part.minute
-    
-    start_min = to_minutes(shift_start)
-    end_min = to_minutes(shift_end)
-    
-    # Cek apakah Shift Malam (Start > End)
-    is_night_shift = start_min > end_min
-    
-    if is_night_shift:
-        # Ambang batas logis: jam 14:00 (siang).
-        # Aktivitas 00:00 - 14:00 dianggap milik shift MALAM SEBELUMNYA.
-        # Aktivitas 14:00 - 23:59 dianggap milik shift HARI INI.
-        cutoff_min = 14 * 60 
-        
-        if t_min < cutoff_min:
-            # Dianggap hari sebelumnya
-            from datetime import timedelta
-            return (date_part - timedelta(days=1)).strftime('%Y-%m-%d')
-    
-    return date_part.strftime('%Y-%m-%d')
 
 # ============================================
 # ROUTE UNTUK FRONTEND
@@ -320,8 +278,8 @@ def adms_cdata():
                     shift_start = employee['shift_start'] or '09:00'
                     shift_end = employee['shift_end'] or '17:00'
                     
-                    # Hitung tanggal logis (untuk shift malam)
-                    date_part = get_logical_date(timestamp, shift_start, shift_end)
+                    # Ambil tanggal langsung dari timestamp (tanpa logika shift malam)
+                    date_part = timestamp.split(' ')[0]
                     time_part = timestamp.split()[1] # HH:MM:SS
                     
                     # LOGIC BARU: Smart Status Detection

@@ -631,12 +631,7 @@ async function loadMonthlyReport() {
         // Update summary stats
         document.getElementById('reportTotalEmployees').textContent = data.summary.total_employees;
         document.getElementById('reportTotalPresent').textContent = data.summary.total_present;
-        document.getElementById('reportTotalOvertime').textContent = formatDuration(data.summary.total_overtime_hours * 60); // Convert hours back to mins for consistent formatting if needed, OR just keep hours if that's what API sends. Assuming API sends HOURS for total. Let's start with raw hours + " jam" or custom logic.
-        // Wait, total_overtime_hours is likely float hours. formatDuration expects minutes.
-        // Let's assume user wants "Xj Ym" everywhere.
-        // But the ID here is reportTotalOvertime... let's check what it was. It was "jam".
-        // Let's keep total summary as is or upgrade it? User said "ganti format nya yaa untuk kolom keterlambatan dan kolom lembur di #reports dan di #attedance". Usually refers to table columns.
-        // Let's stick to table columns first.
+        document.getElementById('reportTotalOvertime').textContent = formatDuration(data.summary.total_overtime_hours * 60);
         document.getElementById('reportTotalOvertime').textContent = data.summary.total_overtime_hours + ' jam'; // Keep summary simple/existing for now unless requested.
 
         document.getElementById('reportTotalLate').textContent = data.summary.total_late_minutes;
