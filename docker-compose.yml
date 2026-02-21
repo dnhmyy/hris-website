@@ -38,9 +38,11 @@ services:
       - app
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
       - ./frontend:/usr/share/nginx/html:ro
     ports:
       - "80:80"
+      - "443:443"
 
   # 4. Database Management: phpMyAdmin
   phpmyadmin:
