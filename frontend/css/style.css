@@ -1102,7 +1102,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('../assets/login-bg.webp'), url('../assets/login-bg.png');
+  background-image: url('../assets/login-bg.webp');
   background-size: cover;
   background-position: center;
   opacity: 0.30;
