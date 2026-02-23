@@ -7,19 +7,20 @@
   <title>RotiKebanggaan</title>
   <meta name="description" content="Sistem HRIS RotiKebanggaan." />
 
+  <!-- Preload critical assets -->
+  <link rel="preload" href="/assets/login-bg.webp" as="image" fetchpriority="high">
+  <link rel="preload" href="/css/style.css?v={{ config['VERSION'] }}" as="style">
+  <link rel="preload" href="/css/icons.css" as="style">
+
   <!-- Preconnect to CDN -->
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 
-  <!-- Preload critical CSS (non-blocking) -->
-  <link rel="preload" href="/css/style.css?v={{ config['VERSION'] }}" as="style"
-    onload="this.onload=null;this.rel='stylesheet'">
+  <!-- Load critical CSS (non-blocking) -->
+  <link rel="stylesheet" href="/css/style.css?v={{ config['VERSION'] }}" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/css/icons.css" media="print" onload="this.media='all'">
+
   <noscript>
     <link rel="stylesheet" href="/css/style.css?v={{ config['VERSION'] }}">
-  </noscript>
-
-  <!-- Font Awesome subset (only 8 icons used) — replaces 18KB CDN -->
-  <link rel="preload" href="/css/icons.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript>
     <link rel="stylesheet" href="/css/icons.css">
   </noscript>
 
@@ -32,11 +33,13 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', system-ui, sans-serif;
       background: #f2f2f7;
       min-height: 100vh;
       display: flex;
-      flex-direction: column
+      flex-direction: column;
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased
     }
 
     .hidden {
@@ -79,7 +82,7 @@
     .login-logo-img {
       aspect-ratio: 210/136;
       width: 120px;
-      height: auto;
+      height: 78px;
       display: block;
       margin: 0 auto .25rem
     }
@@ -107,7 +110,8 @@
       }
 
       .login-logo-img {
-        width: 90px
+        width: 90px;
+        height: 58px
       }
 
       .login-title {
@@ -124,7 +128,7 @@
       <div class="login-header">
         <picture>
           <source srcset="assets/logo.webp" type="image/webp">
-          <img src="assets/logo.png" alt="RotiKebanggaan Logo" class="login-logo-img" width="210" height="136"
+          <img src="assets/logo.png" alt="RotiKebanggaan Logo" class="login-logo-img" width="120" height="78"
             loading="eager" fetchpriority="high">
         </picture>
         <h2 class="login-title">RotiKebanggaan</h2>
@@ -152,7 +156,7 @@
         <h1 class="logo">
           <picture>
             <source srcset="assets/logo.webp" type="image/webp">
-            <img src="assets/logo.png" alt="Logo" class="header-logo-img" width="210" height="136">
+            <img src="assets/logo.png" alt="Logo" class="header-logo-img" width="52" height="34">
           </picture>
           <span class="logo-text">RotiKebanggaan</span>
         </h1>
