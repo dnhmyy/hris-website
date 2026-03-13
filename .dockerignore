@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+
+# Environment variables
+.env
+.env.local
+backend/.env
+backend/.env.local
+
+# SSL Certificates
+nginx/ssl/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.yml
+docker-compose.*.yml
+.dockerignore
+Dockerfile
+
+# Node / JS (just in case they use it in frontend later)
+node_modules/
+npm-debug.log
+yarn-error.log
