@@ -4,23 +4,20 @@ Sistem Informasi Manajemen Sumber Daya Manusia (HRIS) yang dirancang untuk menge
 
 ---
 
-## 🌟 Fitur Utama
+## Fitur Utama
 
 Sistem ini dikembangkan untuk memberikan kemudahan bagi HR dan Operasional melalui fitur-fitur berikut:
 
 ### 1. Dashboard Monitoring Berbasis Cabang
-- Ringkasan data kehadiran harian per cabang (Sorrento, Downtown, dll).
+- Ringkasan data kehadiran harian per cabang.
 - Status koneksi mesin absensi secara *real-time*.
 - Statistik keterlambatan dan jumlah karyawan aktif.
 
-
-## Fitur Utama
-### Manajemen Karyawan
+### 2. Manajemen Karyawan Terpadu
 - Input dan pengelolaan data karyawan.
 - Pengaturan kontrak kerja.
 - Penentuan shift kerja.
 - Penempatan cabang.
-
 
 ### 3. Sistem Absensi Otomatis (ADMS)
 - Integrasi langsung dengan mesin fingerprint (Solution/ZKTeco) menggunakan protokol PUSH SDK (ADMS).
@@ -53,7 +50,7 @@ Ikuti langkah-langkah berikut untuk menjalankan sistem di lingkungan server atau
 ### 1. Persiapan Environment
 Clone repositori ini dan masuk ke direktori project:
 ```bash
-git clone https://github.com/username/hris-website.git
+git clone https://github.com/dnhmyy/hris-website.git
 cd hris-website
 ```
 
