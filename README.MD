@@ -130,4 +130,3 @@ Untuk menghubungkan mesin fingerprint Anda ke sistem ini:
 Dikembangkan dengan dedikasi untuk efisiensi operasional.
 **IT Division - HRIS Project - DnnTech**
 © 2026 
--
