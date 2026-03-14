@@ -6,7 +6,7 @@ import os
 from werkzeug.security import check_password_hash
 from functools import wraps
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -111,10 +111,17 @@ def is_private_ip(ip_str):
 
 # LOGIKA PERHITUNGAN WAKTU DAN SHIFT
 
-def to_minutes(time_str):
-    """Konversi string jam AA:BB ke menit integer dari awal hari"""
+def to_minutes(time_val):
+    """Konversi jam (string 'AA:BB', timedelta, atau time object) ke menit integer"""
+    if isinstance(time_val, timedelta):
+        return int(time_val.total_seconds() // 60)
+    if hasattr(time_val, 'hour') and hasattr(time_val, 'minute'):
+        return time_val.hour * 60 + time_val.minute
     try:
-        parts = time_str.split(':')
+        # Pastikan string, lalu split jam:menit
+        s_val = str(time_val)
+        if ' ' in s_val: s_val = s_val.split(' ')[1] # Handle 'YYYY-MM-DD HH:MM:SS'
+        parts = s_val.split(':')
         return int(parts[0]) * 60 + int(parts[1])
     except:
         return 0
@@ -123,11 +130,6 @@ def calculate_diff_smart(time_val, ref_time, is_night_shift=False):
     """
     Menghitung selisih menit (time_val - ref_time).
     Menangani crossing midnight untuk shift malam.
-    Contoh Shift Malam: 22:00 - 06:00.
-    - Check-in 23:00 vs Start 22:00 -> +60 menit
-    - Check-in 01:00 vs Start 22:00 -> +180 menit (dianggap next day)
-    - Check-out 04:00 vs End 06:00 -> -120 menit
-    - Check-out 07:00 vs End 06:00 -> +60 menit
     """
     t_min = to_minutes(time_val)
     r_min = to_minutes(ref_time)
@@ -135,11 +137,19 @@ def calculate_diff_smart(time_val, ref_time, is_night_shift=False):
     diff = t_min - r_min
     
     # Deteksi crossing midnight
-    # Jika selisih absolut sangat besar (> 12 jam = 720 menit), kemungkinan nyebrang hari
-    if diff < -720: # Contoh: t=01:00 (60), r=22:00 (1320) -> diff = -1260
-        diff += 1440 # Tambah 24 jam
-    elif diff > 720: # Contoh: t=23:00 (1380), r=06:00 (360) -> diff = 1020
-        diff -= 1440 # Kurangi 24 jam
+    # Jika is_night_shift=True, kita gunakan threshold 12 jam (720 menit)
+    if is_night_shift:
+        if diff < -720:
+            diff += 1440
+        elif diff > 720:
+            diff -= 1440
+    else:
+        # Untuk shift siang, kita lebih toleran (misal hingga 20 jam kerja)
+        # Hanya crossing midnight jika selisih sangat ekstrim (misal < -1000)
+        if diff < -1000:
+            diff += 1440
+        elif diff > 1000:
+            diff -= 1440
         
     return diff
 
