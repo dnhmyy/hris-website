@@ -176,6 +176,7 @@
           <li><a href="#dashboard" class="nav-link active">Dashboard</a></li>
           <li><a href="#employees" class="nav-link">Karyawan</a></li>
           <li><a href="#attendance" class="nav-link">Absensi</a></li>
+          <li><a href="#attendance-logs" class="nav-link">Semua Absensi</a></li>
           <li><a href="#reports" class="nav-link">Attendance</a></li>
           <li><a href="#devices" class="nav-link">Mesin Absensi</a></li>
         </ul>
@@ -304,6 +305,41 @@
           </div>
           <div class="pagination-container" id="attendancePagination">
             <!-- Buttons filled by JS -->
+          </div>
+        </section>
+
+        <!-- Attendance Logs Section (Raw / Semua Absensi) -->
+        <section id="attendance-logs" class="section hidden">
+          <div class="section-header">
+            <h2 class="section-title">Semua Histori Fingerprint</h2>
+            <div class="filters">
+              <input type="text" id="searchLogName" class="filter-date" placeholder="ID Karyawan..." style="width: 150px;">
+              <input type="date" class="filter-date" id="logDateFilter" oninput="handleDateInputDisplay(this)" />
+              <button class="btn-primary" onclick="loadAttendanceLogs()">Filter</button>
+              <button class="btn-secondary" onclick="exportRawLogs()">Export Log Excel</button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th width="50">No</th>
+                  <th>Waktu Tap</th>
+                  <th>ID</th>
+                  <th>Nama</th>
+                  <th>Cabang</th>
+                  <th>Aksi (Status)</th>
+                  <th>ID Mesin</th>
+                </tr>
+              </thead>
+              <tbody id="logsTableBody">
+                <tr>
+                  <td colspan="7" style="text-align: center; padding: 2rem;">
+                    Klik Filter untuk memuat data log mentah
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 

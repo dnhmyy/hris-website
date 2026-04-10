@@ -679,6 +679,46 @@ def get_attendance():
     conn.close()
     return jsonify(attendance)
 
+# GET /api/attendance/logs - Mengambil SEMUA riwayat fingerprint (Log Mentah)
+@app.route('/api/attendance/logs', methods=['GET'])
+@login_required
+def get_attendance_logs():
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    
+    date = request.args.get('date')
+    employee_id = request.args.get('employee_id')
+    
+    query = '''
+        SELECT l.*, e.name as employee_name, e.branch_id
+        FROM attendance_logs l
+        JOIN employees e ON l.employee_id = e.id
+        WHERE 1=1
+    '''
+    params = []
+    
+    if date:
+        query += ' AND DATE(l.timestamp) = %s'
+        params.append(date)
+    if employee_id:
+        query += ' AND l.employee_id = %s'
+        params.append(employee_id)
+        
+    query += ' ORDER BY l.timestamp DESC LIMIT 500'
+    
+    cursor.execute(query, params)
+    logs = cursor.fetchall()
+    conn.close()
+    
+    # Format timestamp
+    for l in logs:
+        if l['timestamp'] and hasattr(l['timestamp'], 'strftime'):
+            l['timestamp'] = l['timestamp'].strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            l['timestamp'] = str(l['timestamp'])
+            
+    return jsonify(logs)
+
 # POST: Tambah data absensi
 @app.route('/api/attendance', methods=['POST'])
 def add_attendance():
@@ -1177,6 +1217,57 @@ def export_report():
         as_attachment=True,
         download_name=filename
     )
+
+# GET /api/reports/export-logs - Export SEMUA LOG MENTAH ke Excel
+@app.route('/api/reports/export-logs', methods=['GET'])
+@login_required
+def export_raw_logs():
+    try:
+        import pandas as pd
+        from io import BytesIO
+    except ImportError:
+        return jsonify({'error': 'Library pandas belum terinstall'}), 500
+
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    
+    query = '''
+        SELECT l.timestamp, l.employee_id, e.name, e.branch_id, 
+               CASE WHEN l.status = 0 THEN 'Check-in' ELSE 'Check-out' END as status_desc,
+               l.device_id
+        FROM attendance_logs l
+        JOIN employees e ON l.employee_id = e.id
+        WHERE DATE(l.timestamp) BETWEEN %s AND %s
+        ORDER BY l.timestamp DESC
+    '''
+    cursor.execute(query, [start_date, end_date])
+    rows = cursor.fetchall()
+    conn.close()
+
+    data = []
+    for idx, row in enumerate(rows, 1):
+        data.append({
+            'No': idx,
+            'Waktu Tap': str(row['timestamp']),
+            'ID Karyawan': row['employee_id'],
+            'Nama Lengkap': row['name'],
+            'Cabang': row['branch_id'],
+            'Aksi': row['status_desc'],
+            'ID Mesin': row['device_id']
+        })
+
+    df = pd.DataFrame(data) if data else pd.DataFrame(columns=['No', 'Waktu Tap', 'ID Karyawan', 'Nama Lengkap', 'Cabang', 'Aksi', 'ID Mesin'])
+    
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Semua Histori Absensi')
+    
+    output.seek(0)
+    filename = f"Histori_Lengkap_Absensi_{start_date}_sd_{end_date}.xlsx"
+    return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', as_attachment=True, download_name=filename)
 
 # JALANKAN SERVER
 if __name__ == '__main__':
