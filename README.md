@@ -1,17 +1,17 @@
 # HRIS ADMS Integration System
 
-Sistem Informasi Manajemen Sumber Daya Manusia (HRIS) yang dirancang untuk mengelola data karyawan dan absensi secara efisien. Sistem ini terintegrasi langsung dengan mesin fingerprint dan mendukung operasional multi-cabang untuk pemantauan data yang tersentralisasi.
+Sistem Informasi Manajemen Sumber Daya Manusia (HRIS) yang dirancang untuk mengelola data karyawan dan absensi secara efisien, terintegrasi dengan mesin fingerprint, serta mendukung operasional multi-cabang.
 
 ---
 
 ## Fitur Utama
 
-Sistem ini dikembangkan untuk mengoptimalkan manajemen SDM melalui berbagai fitur strategis:
+Sistem ini dikembangkan untuk memberikan kemudahan bagi HR dan Operasional melalui fitur-fitur berikut:
 
-### 1. Dashboard Monitoring Real-Time
-- Pemantauan kehadiran harian per cabang secara instan.
-- Status konektivitas mesin absensi di seluruh lokasi.
-- Ringkasan statistik keterlambatan dan jumlah SDM aktif.
+### 1. Dashboard Monitoring Berbasis Cabang
+- Ringkasan data kehadiran harian per cabang.
+- Status koneksi mesin absensi secara *real-time*.
+- Statistik keterlambatan dan jumlah karyawan aktif.
 
 ### 2. Manajemen Karyawan Terintegrasi
 - Pengelolaan profil dan basis data karyawan yang komprehensif.
@@ -49,28 +49,27 @@ Visualisasi antarmuka sistem yang dirancang untuk kemudahan penggunaan:
 
 | Halaman | Deskripsi | Preview |
 | :--- | :--- | :--- |
-| **Login Page** | Akses aman dengan desain responsif. | ![Login](public/login.png) |
-| **Main Dashboard** | Pusat kendali informasi dan status sistem. | ![Dashboard](public/dashboard.png) |
-| **Employee List** | Manajemen data karyawan yang intuitif. | ![Karyawan](public/karyawan.png) |
-| **Attendance Logs** | Rekam jejak absensi mentah dengan deteksi otomatis. | ![Absensi](public/absensi.png) |
-| **Monthly Report** | Ringkasan kinerja dan kehadiran per periode. | ![Attendance](public/attedance.png) ![Attendance 2](public/attedance2.png) |
+| **Login Page** | Keamanan akses dengan latar belakang kustom dan responsif. | ![Login](public/login.png) |
+| **Main Dashboard** | Menampilkan statistik cepat, status mesin, dan navigasi utama. | ![Dashboard](public/dashboard.png) |
+| **Employee List** | Tabel interaktif untuk edit, hapus, dan tambah karyawan baru. | ![Karyawan](public/karyawan.png) |
+| **Attendance Logs** | Riwayat mentah dari mesin beserta status deteksi otomatis. | ![Absensi](public/absensi.png) |
+| **Monthly Report** | Ringkasan produktivitas, lembur, dan keterlambatan per periode. | ![Attendance](public/attedance.png) ![Attendance 2](public/attedance2.png) |
 
 ---
 
 ## Integrasi Mesin Fingerprint (ADMS)
 
-Sistem menggunakan arsitektur PUSH untuk komunikasi dua arah antara server dan perangkat:
-
-1. Konfigurasi **COMM/Network** pada perangkat fingerprint.
-2. Pengaturan **ADMS / Cloud Server** mengarah ke domain atau IP server utama.
-3. Penggunaan port standar atau kustom sesuai kebijakan keamanan jaringan.
-4. Mendukung sinkronisasi data lintas jaringan melalui proxy atau tunnel.
+Untuk menghubungkan mesin fingerprint Anda ke sistem ini:
+1. Masuk ke menu **COMM/Network** di mesin.
+2. Cari pengaturan **ADMS / Cloud Server**.
+3. Masukkan **Server Address**: `http://domain-anda.com` (atau IP Server).
+4. Masukkan **Server Port**: `80`.
+5. Aktifkan fitur **Enable Proxy Server** jika diperlukan.
 
 ---
 
 ## Lisensi & Pengembang
 
-Dikembangkan untuk memberikan solusi manajemen SDM yang efisien dan andal.
-
+Dikembangkan dengan dedikasi untuk efisiensi operasional.
 **IT Division - HRIS Project - DnnTech**  
 © 2026

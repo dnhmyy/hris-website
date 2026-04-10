@@ -67,6 +67,19 @@ def init_database():
         )
     ''')
 
+    # Buat tabel log absensi (untuk mencatat SEMUA fingerprint tanpa terkecuali)
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS attendance_logs (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            employee_id VARCHAR(50),
+            timestamp DATETIME,
+            status INT, -- 0: Check-in, 1: Check-out
+            device_id VARCHAR(50),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (employee_id) REFERENCES employees(id)
+        )
+    ''')
+
     # Insert data contoh untuk branches (sesuai dengan config.js)
     branches = [
         ('sorrento', 'Sorrento', 'sorrento'),

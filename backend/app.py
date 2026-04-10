@@ -345,8 +345,14 @@ def adms_cdata():
                         print(f"INFO: Koreksi status otomatis PIN {pin_val} {time_part}: Status {raw_status} -> 1 (Check-out)")
                     
                     
+                    # 1. TETAP CATAT SEMUA KE TABEL LOG (HISTORI LENGKAP)
+                    cursor.execute('''
+                        INSERT INTO attendance_logs (employee_id, timestamp, status, device_id)
+                        VALUES (%s, %s, %s, %s)
+                    ''', (employee_id, timestamp, raw_status, sn))
+
+                    # 2. UPDATE TABEL RANGKUMAN (LOGIK AWAL: TIMPA TERUS)
                     if final_status == 0: # Check-in
-                        # Hitung Keterlambatan: Check-in - Shift Start
                         late = max(0, calculate_diff_smart(time_part, shift_start, is_night))
                         
                         # CLEANUP: Jika sebelumnya tercatat sebagai Check-out di jam yang sama (error mesin), hapus Check-outnya
@@ -365,7 +371,6 @@ def adms_cdata():
                         ''', (employee_id, date_part, time_part, late))
                         
                     else: # Check-out
-                        # Hitung Lembur: Check-out - Shift End
                         overtime = max(0, calculate_diff_smart(time_part, shift_end, is_night))
                         
                         # CLEANUP: Jika sebelumnya tercatat sebagai Check-in di jam yang sama, hapus Check-innya
@@ -375,19 +380,15 @@ def adms_cdata():
                             WHERE employee_id = %s AND date = %s AND check_in = %s
                         ''', (employee_id, date_part, time_part))
                         
-                        # Validasi: Check-out harus > Check-in
-                        # Kita ambil check_in yang sudah ada dulu untuk validasi
                         cursor.execute('SELECT check_in FROM attendance WHERE employee_id=%s AND date=%s', (employee_id, date_part))
                         existing = cursor.fetchone()
                         
                         validation_status = 'present'
                         if existing and existing['check_in']:
-                            # Cek durasi kerja positif
-                            # Jika Check-out lebih awal dari Check-in (invalid)
                             diff_work = calculate_diff_smart(time_part, existing['check_in'], is_night)
                             if diff_work < 0:
                                 validation_status = 'invalid'
-                                overtime = 0 # Invalid record, no overtime
+                                overtime = 0
                         
                         cursor.execute('''
                             INSERT INTO attendance (employee_id, date, check_out, overtime_minutes, status)
