@@ -39,6 +39,11 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
+# KECUALIKAN JALUR MESIN ABSEN DARI RATE LIMITER
+@limiter.request_filter
+def ip_whitelist():
+    return request.path.startswith('/iclock')
+
 #Cache Control Configration
 @app.after_request
 def add_cache_control(response):
