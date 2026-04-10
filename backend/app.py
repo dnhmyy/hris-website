@@ -1149,7 +1149,10 @@ def export_report():
             a.check_in,
             a.check_out,
             a.late_minutes,
-            a.overtime_minutes
+            a.overtime_minutes,
+            (SELECT GROUP_CONCAT(DATE_FORMAT(timestamp, '%H:%i') ORDER BY timestamp SEPARATOR ', ') 
+             FROM attendance_logs 
+             WHERE employee_id = e.id AND DATE(timestamp) = a.date) as all_taps
         FROM employees e
         JOIN attendance a ON e.id = a.employee_id 
         WHERE a.date BETWEEN %s AND %s
@@ -1180,12 +1183,13 @@ def export_report():
             'Check-In': str(row['check_in']) if row['check_in'] else '-',
             'Check-Out': str(row['check_out']) if row['check_out'] else '-',
             'Keterlambatan (Menit)': row['late_minutes'] or 0,
-            'Lembur (Menit)': row['overtime_minutes'] or 0
+            'Lembur (Menit)': row['overtime_minutes'] or 0,
+            'Semua Riwayat Tap': row['all_taps'] or '-'
         })
 
     # Buat DataFrame
     if not data:
-        df = pd.DataFrame(columns=['No', 'Tanggal', 'ID Karyawan', 'Nama Lengkap', 'Cabang', 'Shift Masuk', 'Shift Keluar', 'Check-In', 'Check-Out', 'Keterlambatan (Menit)', 'Lembur (Menit)'])
+        df = pd.DataFrame(columns=['No', 'Tanggal', 'ID Karyawan', 'Nama Lengkap', 'Cabang', 'Shift Masuk', 'Shift Keluar', 'Check-In', 'Check-Out', 'Keterlambatan (Menit)', 'Lembur (Menit)', 'Semua Riwayat Tap'])
     else:
         df = pd.DataFrame(data)
     

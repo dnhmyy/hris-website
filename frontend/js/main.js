@@ -1240,19 +1240,3 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// ========== SEMUA ABSENSI (RAW LOGS) ==========
-
-function exportRawLogs() {
-    // Ambil tanggal dari filter yang ada di halaman Reports (Attendance)
-    const startDate = document.getElementById('reportStartDate')?.value;
-    const endDate = document.getElementById('reportEndDate')?.value;
-
-    if (!startDate || !endDate) {
-        showToast('Pilih tanggal "Dari" dan "Sampai" terlebih dahulu', 'error');
-        return;
-    }
-
-    const url = `${API_BASE}/reports/export-logs?start_date=${startDate}&end_date=${endDate}`;
-    showToast('Mendownload histori log lengkap (Raw)...', 'info');
-    window.location.href = url;
-}
