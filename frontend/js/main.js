@@ -1028,20 +1028,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Event listener untuk tab Semua Absensi (Log Mentah)
-    const logsLink = document.querySelector('a[href="#attendance-logs"]');
-    if (logsLink) {
-        logsLink.addEventListener('click', function () {
-            const dateEl = document.getElementById('logDateFilter');
-            if (dateEl && !dateEl.value) {
-                const today = new Date().toISOString().slice(0, 10);
-                dateEl.value = today;
-                if (typeof handleDateInputDisplay === 'function') handleDateInputDisplay(dateEl);
-            }
-            setTimeout(loadAttendanceLogs, 100);
-        });
-    }
-
     // Load data awal jika di dashboard
     if (!window.location.hash || window.location.hash === '#dashboard') {
         setTimeout(fetchDashboardStats, 500);
@@ -1255,69 +1241,18 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ========== SEMUA ABSENSI (RAW LOGS) ==========
-async function loadAttendanceLogs() {
-    const date = document.getElementById('logDateFilter').value;
-    const employeeId = document.getElementById('searchLogName').value;
 
-    let url = `${API_BASE}/attendance/logs`;
-    const params = new URLSearchParams();
-    if (date) params.append('date', date);
-    if (employeeId) params.append('employee_id', employeeId);
+function exportRawLogs() {
+    // Ambil tanggal dari filter yang ada di halaman Reports (Attendance)
+    const startDate = document.getElementById('reportStartDate')?.value;
+    const endDate = document.getElementById('reportEndDate')?.value;
 
-    if (params.toString()) {
-        url += '?' + params.toString();
-    }
-
-    const tbody = document.getElementById('logsTableBody');
-    if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Memuat log...</td></tr>';
-
-    try {
-        const response = await fetch(url);
-        const logs = await response.json();
-        renderLogsTable(logs);
-    } catch (error) {
-        console.error('Gagal memuat raw logs:', error);
-        showToast('Gagal memuat histori log', 'error');
-    }
-}
-
-function renderLogsTable(logs) {
-    const tbody = document.getElementById('logsTableBody');
-    if (!tbody) return;
-
-    if (!logs || logs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">Tidak ada histori fingerprint pada filter ini</td></tr>';
+    if (!startDate || !endDate) {
+        showToast('Pilih tanggal "Dari" dan "Sampai" terlebih dahulu', 'error');
         return;
     }
 
-    tbody.innerHTML = logs.map((log, index) => `
-        <tr>
-            <td>${index + 1}</td>
-            <td>${log.timestamp}</td>
-            <td>${escapeHTML(log.employee_id)}</td>
-            <td>${escapeHTML(log.employee_name)}</td>
-            <td><span class="branch-badge ${log.branch_id}">${getBranchName(log.branch_id)}</span></td>
-            <td>
-                <span style="color: ${log.status === 0 ? '#10b981' : '#f59e0b'}; font-weight: bold;">
-                    ${log.status === 0 ? 'CHECK-IN' : 'CHECK-OUT'}
-                </span>
-            </td>
-            <td><small>${escapeHTML(log.device_id)}</small></td>
-        </tr>
-    `).join('');
-}
-
-function exportRawLogs() {
-    let startDate = document.getElementById('reportStartDate')?.value || document.getElementById('logDateFilter')?.value;
-    let endDate = document.getElementById('reportEndDate')?.value || document.getElementById('logDateFilter')?.value;
-
-    if (!startDate) {
-        const today = new Date().toISOString().slice(0, 10);
-        startDate = today;
-        endDate = today;
-    }
-
     const url = `${API_BASE}/reports/export-logs?start_date=${startDate}&end_date=${endDate}`;
-    showToast('Mendownload histori log lengkap...', 'info');
+    showToast('Mendownload histori log lengkap (Raw)...', 'info');
     window.location.href = url;
 }
