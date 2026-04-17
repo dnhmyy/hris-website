@@ -7,7 +7,6 @@ from werkzeug.security import check_password_hash
 from functools import wraps
 import requests
 from datetime import datetime, timedelta
-from flask_cors import CORS
 from dotenv import load_dotenv
 import pandas as pd
 from openpyxl.styles import Alignment, Font
@@ -1308,23 +1307,6 @@ def export_raw_logs():
     return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', as_attachment=True, download_name=filename)
 
 # JALANKAN SERVER
-if __name__ == '__main__':
-    # Cek koneksi database MySQL
-    try:
-        conn = get_db()
-        conn.ping(reconnect=True)
-        conn.close()
-        print("Koneksi database berhasil")
-    except Exception as e:
-        print(f"Koneksi database gagal: {e}")
-    
-    print("\n" + "-"*50)
-    print("SERVER HRIS BERJALAN")
-    print("-"*50)
-    
-    app_domain = os.getenv('APP_DOMAIN', 'hris.tamvan.web.id')
-    print(f"Production: https://{app_domain}")
-    
 if __name__ == '__main__':
     # Listen di 0.0.0.0 agar bisa diakses dari luar container Docker
     app.run(host='0.0.0.0', port=5000)
