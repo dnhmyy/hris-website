@@ -7,7 +7,10 @@ from werkzeug.security import check_password_hash
 from functools import wraps
 import requests
 from datetime import datetime, timedelta
+from flask_cors import CORS
 from dotenv import load_dotenv
+import pandas as pd
+from openpyxl.styles import Alignment, Font
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import ipaddress
@@ -1119,11 +1122,7 @@ def monthly_report():
 @app.route('/api/reports/export', methods=['GET'])
 @login_required
 def export_report():
-    try:
-        import pandas as pd
-        from io import BytesIO
-    except ImportError:
-        return jsonify({'error': 'Library pandas belum terinstall'}), 500
+    from io import BytesIO
 
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
@@ -1198,18 +1197,32 @@ def export_report():
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='Laporan Absensi')
         
-        # Auto-adjust column width
+        # Auto-adjust column width and styling
         ws = writer.sheets['Laporan Absensi']
+        
+        # Style for Header
+        header_font = Font(bold=True)
+        center_alignment = Alignment(horizontal='center', vertical='center')
+        left_alignment = Alignment(horizontal='left', vertical='center')
+
         for column in ws.columns:
             max_length = 0
             column_letter = column[0].column_letter
             for cell in column:
+                # Apply alignment
+                if cell.row == 1:
+                    cell.alignment = center_alignment
+                    cell.font = header_font
+                else:
+                    cell.alignment = left_alignment
+                
                 try:
                     if len(str(cell.value)) > max_length:
                         max_length = len(str(cell.value))
                 except:
                     pass
-            adjusted_width = int(max_length) + 2
+            
+            adjusted_width = max(len(str(column[0].value)) + 4, int(max_length) + 2)
             ws.column_dimensions[column_letter].width = adjusted_width
     
     output.seek(0)
@@ -1226,11 +1239,7 @@ def export_report():
 @app.route('/api/reports/export-logs', methods=['GET'])
 @login_required
 def export_raw_logs():
-    try:
-        import pandas as pd
-        from io import BytesIO
-    except ImportError:
-        return jsonify({'error': 'Library pandas belum terinstall'}), 500
+    from io import BytesIO
 
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
@@ -1268,6 +1277,31 @@ def export_raw_logs():
     output = BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='Semua Histori Absensi')
+        
+        ws = writer.sheets['Semua Histori Absensi']
+        header_font = Font(bold=True)
+        center_alignment = Alignment(horizontal='center', vertical='center')
+        left_alignment = Alignment(horizontal='left', vertical='center')
+        
+        for column in ws.columns:
+            max_length = 0
+            column_letter = column[0].column_letter
+            for cell in column:
+                if cell.row == 1:
+                    cell.alignment = center_alignment
+                    cell.font = header_font
+                else:
+                    cell.alignment = left_alignment
+                
+                try:
+                    val = str(cell.value) if cell.value is not None else ""
+                    if len(val) > max_length:
+                        max_length = len(val)
+                except:
+                    pass
+            
+            adjusted_width = max(len(str(column[0].value)) + 4, int(max_length) + 2)
+            ws.column_dimensions[column_letter].width = adjusted_width
     
     output.seek(0)
     filename = f"Histori_Lengkap_Absensi_{start_date}_sd_{end_date}.xlsx"
