@@ -41,9 +41,8 @@ services:
     depends_on:
       - app
       - phpmyadmin
-    environment:
-      APP_DOMAIN: ${APP_DOMAIN}
-      PMA_DOMAIN: ${PMA_DOMAIN}
+    env_file:
+      - .env
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/templates/default.conf.template:ro
       - ./nginx/ssl/nginx.crt:/etc/nginx/ssl/nginx.crt:ro
@@ -62,10 +61,11 @@ services:
     restart: always
     depends_on:
       - db
+    env_file:
+      - .env
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
-      PMA_ABSOLUTE_URI: ${PMA_ABSOLUTE_URI}
       PMA_ARBITRARY: 0
     ports:
       - "127.0.0.1:${PMA_PORT_MAP}:80"
