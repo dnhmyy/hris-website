@@ -46,18 +46,19 @@ services:
       - "443:443"
 
   # 4. Database Management: phpMyAdmin 
-  #phpmyadmin:
-  #  image: phpmyadmin:latest
-  #  container_name: hris_phpmyadmin
-  #  restart: always
-  #  depends_on:
-  #    - db
-  #  environment:
-  #    PMA_HOST: ${DB_HOST}
-  #    PMA_PORT: ${DB_PORT}
-  #    PMA_ARBITRARY: 1
-  #  ports:
-  #    - "${PMA_PORT_MAP}:80"
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: hris_phpmyadmin
+    restart: always
+    depends_on:
+      - db
+    environment:
+      PMA_HOST: ${DB_HOST}
+      PMA_PORT: ${DB_PORT}
+      PMA_ARBITRARY: 1
+      PMA_ABSOLUTE_URI: https://${APP_DOMAIN}/phpmyadmin/
+    ports:
+      - "${PMA_PORT_MAP}:80"
 
   # 5. Remote Access: Cloudflare Tunnel
   tunnel:
