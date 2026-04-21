@@ -53,8 +53,8 @@ services:
     depends_on:
       - db
     environment:
-      PMA_HOST: ${DB_HOST}
-      PMA_PORT: ${DB_PORT}
+      PMA_HOST: db
+      PMA_PORT: 3306
       PMA_ARBITRARY: 1
       PMA_ABSOLUTE_URI: https://${APP_DOMAIN}/phpmyadmin/
     ports:
