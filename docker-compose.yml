@@ -13,6 +13,8 @@ services:
       - mysql_data:/var/lib/mysql
     ports:
       - "127.0.0.1:${DB_PORT}:3306"
+    networks:
+      - hris_network
 
   # 2. Application Backend: Flask + Gunicorn
   app:
@@ -28,6 +30,8 @@ services:
       DB_NAME: ${DB_NAME}
       DB_PORT: ${DB_PORT}
       SECRET_KEY: ${SECRET_KEY}
+    networks:
+      - hris_network
 
   # 3. Web Server: Nginx
   web:
@@ -44,6 +48,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    networks:
+      - hris_network
 
   # 4. Database Management: phpMyAdmin 
   phpmyadmin:
@@ -59,6 +65,8 @@ services:
       PMA_ABSOLUTE_URI: https://${APP_DOMAIN}/phpmyadmin/
     ports:
       - "${PMA_PORT_MAP}:80"
+    networks:
+      - hris_network
 
   # 5. Remote Access: Cloudflare Tunnel
   tunnel:
@@ -68,6 +76,12 @@ services:
     command: tunnel run --token ${CLOUDFLARE_TUNNEL_TOKEN}
     depends_on:
       - web
+    networks:
+      - hris_network
 
 volumes:
   mysql_data:
+
+networks:
+  hris_network:
+    driver: bridge
