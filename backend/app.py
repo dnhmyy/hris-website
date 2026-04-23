@@ -257,6 +257,8 @@ def adms_cdata():
     if not sn:
         return "ERROR: SN required", 400
     
+    print(f"ADMS: Request from SN {sn} | Table: {table} | Options: {options} | Method: {request.method}")
+    
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
     cursor.execute('''
@@ -406,6 +408,9 @@ def adms_cdata():
                                 status = VALUES(status)
                         ''', (employee_id, date_part, time_part, overtime, validation_status))
 
+                else:
+                    print(f"WARNING: Data absen dari SN {sn} diabaikan. PIN {pin_val} tidak terdaftar di tabel employees.")
+
                 # Track stamp
                 if 'stamp' in log and log['stamp'] and int(log['stamp']) > max_stamp:
                     max_stamp = log['stamp']
@@ -449,6 +454,7 @@ def adms_getrequest():
     if not sn:
         return "OK"
     
+    print(f"ADMS: Polling from SN {sn}")
     # For now, return OK (no commands)
     # Future: implement command queue for remote management
     return "OK"
